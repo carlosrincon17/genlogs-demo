@@ -51,6 +51,18 @@ jobs:
       - name: Run Backend Unit Tests (Pytest)
         run: docker run --rm backend uv run pytest --cov=app --cov-report=term-missing
 
+  test-frontend:
+    name: Test Frontend
+    needs: [lint-backend, lint-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Frontend Docker Image
+        run: docker build --target builder -t frontend -f infra/Dockerfile.frontend frontend/
+      - name: Run Frontend Tests (Vitest)
+        run: docker run --rm frontend npm test
+
+
   # =================================================================================================
   # STAGE 3: BUILD
   # =================================================================================================
@@ -92,7 +104,7 @@ jobs:
 
   build-frontend:
     name: Build Frontend
-    needs: test-backend
+    needs: test-frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
