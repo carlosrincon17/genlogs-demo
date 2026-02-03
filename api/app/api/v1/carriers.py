@@ -1,7 +1,9 @@
+from typing import List
+
 from fastapi import APIRouter
+
 from app.controllers.carrier_controller import CarrierController
 from app.models.carrier_model import Carrier, CarrierSearchRequest
-from typing import List
 
 router = APIRouter()
 

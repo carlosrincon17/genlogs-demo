@@ -1,5 +1,6 @@
 from app.constants.carrier_constants import CARRIER_DATA
 
+
 class CarrierController:
     @staticmethod
     def search_carriers(from_city: str, to_city: str):
