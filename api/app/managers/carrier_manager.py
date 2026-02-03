@@ -1,6 +1,8 @@
 from typing import List
+
 from app.constants.carrier_constants import CARRIER_DATA
 from app.models.carrier_model import Carrier
+
 
 class CarrierManager:
     @staticmethod

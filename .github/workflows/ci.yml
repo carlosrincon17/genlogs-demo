@@ -106,35 +106,8 @@ jobs:
     name: Build Frontend
     needs: test-frontend
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Build Frontend Artifacts
-        run: |
-          docker build \
-            --target builder \
-            --build-arg VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }} \
-            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
-            -t frontend-builder \
-            -f infra/Dockerfile.frontend frontend/
-          
-          # Extract dist folder from the image
-          container_id=$(docker create frontend-builder)
-          docker cp $container_id:/app/dist ./dist
-          docker rm $container_id
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-dist
-          path: dist/
-
-  deploy-frontend:
-    name: Deploy Frontend
-    needs: build-frontend
-    runs-on: ubuntu-latest
-    env:
-      CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+    outputs:
+      ecr_registry: ${{ steps.login-ecr.outputs.registry }}
     steps:
       - uses: actions/checkout@v4
       
@@ -145,25 +118,67 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-dist
-          path: dist/
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Sync Files to S3
+      - name: Ensure ECR Repository Exists
+        run: |
+          aws ecr describe-repositories --repository-names genlogs-frontend || aws ecr create-repository --repository-name genlogs-frontend
+      
+      - name: Build, tag, and push image to Amazon ECR
         env:
-          S3_BUCKET_NAME: ${{ secrets.FRONTEND_BUCKET_NAME }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: genlogs-frontend
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          aws s3 sync ./dist s3://$S3_BUCKET_NAME --delete
+          docker build \
+            --build-arg VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }} \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL}} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -f infra/Dockerfile.frontend frontend/
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # Optional: Invalidate CloudFront if CLOUDFRONT_DISTRIBUTION_ID is provided
-      - name: Invalidate CloudFront (Optional)
-        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
-            --paths "/*"
+  deploy-frontend:
+    name: Deploy Frontend
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        env:
+          ECR_REGISTRY: ${{ needs.build-frontend.outputs.ecr_registry }}
+          ECR_REPOSITORY: genlogs-frontend
+          IMAGE_TAG: ${{ github.sha }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION
+          script: |
+            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            export AWS_DEFAULT_REGION=$AWS_REGION
+            
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+            
+            IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            docker pull $IMAGE_URI
+            
+            docker network create genlogs-network || true
+            
+            docker stop frontend || true
+            docker rm frontend || true
+            
+            docker run -d \
+              --name frontend \
+              --network genlogs-network \
+              -p 80:80 \
+              --restart always \
+              $IMAGE_URI
 
   deploy-backend:
     name: Deploy Backend
@@ -197,6 +212,9 @@ jobs:
             IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
             docker pull $IMAGE_URI
 
+            # Create network if not exists
+            docker network create genlogs-network || true
+
             # Stop and remove old container
             docker stop backend || true
             docker rm backend || true
@@ -204,6 +222,8 @@ jobs:
             # Run new container
             docker run -d \
               --name backend \
+              --network genlogs-network \
+              --network-alias backend \
               -p 8000:8000 \
               --restart always \
               -e ENVIRONMENT=production \

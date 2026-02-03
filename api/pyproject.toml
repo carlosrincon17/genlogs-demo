@@ -1,7 +1,7 @@
 [project]
-name = "api"
+name = "getlogs-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "genlogs test api"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

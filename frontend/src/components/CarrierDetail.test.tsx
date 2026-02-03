@@ -5,7 +5,7 @@ import { Carrier } from '@/interfaces/Carrier';
 
 const mockCarrier: Carrier = {
     name: 'Test Carrier',
-    trucks: '10 Trucks',
+    truck_count: 10,
     logo_url: 'http://example.com/logo.png',
     contact_name: 'John Doe',
     contact_phone: '123-456',

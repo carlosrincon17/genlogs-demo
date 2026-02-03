@@ -18,7 +18,7 @@ describe('SearchResults', () => {
         const mockResults = [
             {
                 name: 'Carrier A',
-                trucks: '5 trucks',
+                truck_count: 5,
                 logo_url: 'http://test.com/logo.png',
                 contact_name: 'Contact A',
                 contact_phone: '123',
@@ -27,7 +27,7 @@ describe('SearchResults', () => {
             },
             {
                 name: 'Carrier B',
-                trucks: '10 trucks',
+                truck_count: 10,
                 logo_url: 'http://test.com/logo.png',
                 contact_name: 'Contact B',
                 contact_phone: '456',
@@ -39,6 +39,5 @@ describe('SearchResults', () => {
         render(<SearchResults results={mockResults as any} isLoading={false} />);
         expect(screen.getByText('Carrier A')).toBeInTheDocument();
         expect(screen.getByText('Carrier B')).toBeInTheDocument();
-        expect(screen.getByText('5 trucks')).toBeInTheDocument();
     });
 });

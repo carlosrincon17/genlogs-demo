@@ -1,6 +1,6 @@
-from app.constants.carrier_constants import CARRIER_DATA
 from app.controllers.carrier_controller import CarrierController
 from app.models.carrier_model import Carrier
+
 
 def test_search_carriers_east_coast():
     results = CarrierController.search_carriers("New York", "Washington")

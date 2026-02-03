@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 
 
 class Truck(BaseModel):
@@ -8,12 +8,16 @@ class Truck(BaseModel):
 
 class Carrier(BaseModel):
     name: str
-    trucks: str  # Kept for backward compatibility display if needed, or update to description
     logo_url: str
     contact_name: str
     contact_phone: str
     contact_email: str
     related_trucks: list[Truck] = []
+
+    @computed_field
+    @property
+    def truck_count(self) -> int:
+        return len(self.related_trucks)
 
 class CarrierSearchRequest(BaseModel):
     from_city: str

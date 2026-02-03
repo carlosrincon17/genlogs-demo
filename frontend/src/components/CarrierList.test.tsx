@@ -6,7 +6,7 @@ import { Carrier } from '@/interfaces/Carrier';
 const mockResults: Carrier[] = [
     {
         name: 'Carrier A',
-        trucks: '10 Trucks',
+        truck_count: 10,
         logo_url: '',
         contact_name: '',
         contact_phone: '',
@@ -15,7 +15,7 @@ const mockResults: Carrier[] = [
     },
     {
         name: 'Carrier B',
-        trucks: '5 Trucks',
+        truck_count: 5,
         logo_url: '',
         contact_name: '',
         contact_phone: '',
@@ -27,7 +27,7 @@ const mockResults: Carrier[] = [
 describe('CarrierList', () => {
     it('renders loading state', () => {
         render(<CarrierList results={[]} isLoading={true} onSelectCarrier={vi.fn()} />);
-        expect(screen.queryByText('No carriers found')).not.toBeInTheDocument();
+        expect(screen.queryByText(/No carriers found/i)).not.toBeInTheDocument();
     });
 
     it('renders list of carriers', () => {
@@ -38,7 +38,7 @@ describe('CarrierList', () => {
 
     it('renders no results message', () => {
         render(<CarrierList results={[]} isLoading={false} onSelectCarrier={vi.fn()} />);
-        expect(screen.getByText('No carriers found')).toBeInTheDocument();
+        expect(screen.getByText(/No carriers found/i)).toBeInTheDocument();
     });
 
     it('calls onSelectCarrier when a carrier is clicked', () => {

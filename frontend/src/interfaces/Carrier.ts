@@ -6,7 +6,7 @@ export interface Truck {
 
 export interface Carrier {
     name: string;
-    trucks: string;
+    truck_count?: number;
     logo_url: string;
     contact_name: string;
     contact_phone: string;

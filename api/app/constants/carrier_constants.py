@@ -1,8 +1,7 @@
 CARRIER_DATA = [
     {
         "name": "Knight-Swift Transport Services",
-        "trucks": "10 Trucks/Day",
-        "logo_url": "https://logo.clearbit.com/knight-swift.com",
+        "logo_url": "https://invalid.url/logo.png",
         "contact_name": "John Knight",
         "contact_phone": "+1 602-269-2000",
         "contact_email": "contact@knight-swift.com",
@@ -21,7 +20,6 @@ CARRIER_DATA = [
     },
     {
         "name": "J.B. Hunt Transport Services Inc",
-        "trucks": "7 Trucks/Day",
         "logo_url": "https://logo.clearbit.com/jbhunt.com",
         "contact_name": "Jane Hunt",
         "contact_phone": "+1 479-820-0000",
@@ -38,7 +36,6 @@ CARRIER_DATA = [
     },
     {
         "name": "YRC Worldwide",
-        "trucks": "5 Trucks A day",
         "logo_url": "https://logo.clearbit.com/myyellow.com",
         "contact_name": "Mike Yellow",
         "contact_phone": "+1 913-696-6100",
@@ -53,7 +50,6 @@ CARRIER_DATA = [
     },
     {
         "name": "XPO Logistics",
-        "trucks": "9 Trucks/Day",
         "logo_url": "https://logo.clearbit.com/xpo.com",
         "contact_name": "Sarah Xpo",
         "contact_phone": "+1 203-489-1287",
@@ -72,7 +68,6 @@ CARRIER_DATA = [
     },
     {
         "name": "Schneider",
-        "trucks": "6 Trucks/Day",
         "logo_url": "https://logo.clearbit.com/schneider.com",
         "contact_name": "Tom Schneider",
         "contact_phone": "+1 920-592-2000",
@@ -88,7 +83,6 @@ CARRIER_DATA = [
     },
     {
         "name": "Landstar Systems",
-        "trucks": "2 Trucks A day",
         "logo_url": "https://logo.clearbit.com/landstar.com",
         "contact_name": "Linda Landstar",
         "contact_phone": "+1 904-398-9400",
@@ -100,7 +94,6 @@ CARRIER_DATA = [
     },
     {
         "name": "UPS Inc.",
-        "trucks": "11 trucks Day",
         "logo_url": "https://logo.clearbit.com/ups.com",
         "contact_name": "Support UPS",
         "contact_phone": "+1 800-742-5877",
@@ -121,7 +114,6 @@ CARRIER_DATA = [
     },
     {
         "name": "FedEx Corp",
-        "trucks": "9 trucks a day",
         "logo_url": "https://logo.clearbit.com/fedex.com",
         "contact_name": "Support FedEx",
         "contact_phone": "+1 800-463-3339",

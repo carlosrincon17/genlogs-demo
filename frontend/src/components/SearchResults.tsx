@@ -37,7 +37,7 @@ export function SearchResults({ results, isLoading }: SearchResultsProps) {
                     <div>
                       <div className="font-medium">{carrier.name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {carrier.trucks}
+                        {carrier.truck_count ? `${carrier.truck_count} Trucks` : 'No trucks info'}
                       </div>
                     </div>
                   </div>

@@ -35,11 +35,16 @@ export function CarrierList({ results, isLoading, onSelectCarrier }: CarrierList
                                         src={carrier.logo_url}
                                         alt={`${carrier.name} logo`}
                                         className="h-12 w-12 object-contain rounded-md bg-white border"
+                                        onError={(e) => {
+                                            const img = e.currentTarget;
+                                            img.onerror = null; // Prevent infinite loop
+                                            img.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(carrier.name)}`;
+                                        }}
                                     />
                                     <div>
                                         <div className="font-medium">{carrier.name}</div>
                                         <div className="text-sm text-muted-foreground">
-                                            {carrier.trucks}
+                                            {carrier.truck_count ? `${carrier.truck_count} Trucks` : 'No trucks info'}
                                         </div>
                                     </div>
                                 </div>

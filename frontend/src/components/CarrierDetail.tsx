@@ -25,6 +25,11 @@ export function CarrierDetail({ carrier, onBack }: CarrierDetailProps) {
                         src={carrier.logo_url}
                         alt={`${carrier.name} logo`}
                         className="h-24 w-auto object-contain p-2 bg-white rounded-lg border"
+                        onError={(e) => {
+                            const img = e.currentTarget;
+                            img.onerror = null;
+                            img.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(carrier.name)}`;
+                        }}
                     />
                 </div>
 

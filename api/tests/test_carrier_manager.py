@@ -2,6 +2,7 @@ from app.constants.carrier_constants import CARRIER_DATA
 from app.managers.carrier_manager import CarrierManager
 from app.models.carrier_model import Carrier
 
+
 def test_get_carriers_east_coast():
     results = CarrierManager.get_carriers("New York", "Washington")
     assert len(results) == 3
