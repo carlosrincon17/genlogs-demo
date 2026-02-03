@@ -18,6 +18,7 @@ jobs:
   # STAGE 1: LINT
   # =================================================================================================
   lint-backend:
+    name: 🧹 Lint Backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +28,7 @@ jobs:
         run: docker run --rm backend uv run ruff check .
 
   lint-frontend:
+    name: 🧹 Lint Frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +41,7 @@ jobs:
   # STAGE 2: TEST
   # =================================================================================================
   test-backend:
+    name: 🧪 Test Backend
     needs: [lint-backend, lint-frontend]
     runs-on: ubuntu-latest
     steps:
@@ -52,6 +55,7 @@ jobs:
   # STAGE 3: BUILD
   # =================================================================================================
   build-backend:
+    name: 🐳 Build Backend
     needs: test-backend
     runs-on: ubuntu-latest
     outputs:
@@ -87,6 +91,7 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   build-frontend:
+    name: 🏗️ Build Frontend
     needs: test-backend
     runs-on: ubuntu-latest
     steps:
@@ -97,6 +102,7 @@ jobs:
           docker build \
             --target builder \
             --build-arg VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }} \
+            --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
             -t frontend-builder \
             -f infra/Dockerfile.frontend frontend/
           
@@ -115,6 +121,7 @@ jobs:
   # STAGE 4: DEPLOY
   # =================================================================================================
   deploy-frontend:
+    name: 🚀 Deploy Frontend
     needs: build-frontend
     runs-on: ubuntu-latest
     env:
@@ -150,6 +157,7 @@ jobs:
             --paths "/*"
 
   deploy-backend:
+    name: 🚀 Deploy Backend
     needs: build-backend
     runs-on: ubuntu-latest
     steps:
