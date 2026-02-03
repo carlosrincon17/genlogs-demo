@@ -1,6 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-
-import { Carrier } from '@/services/carrierService';
+import { Carrier } from '@/interfaces/Carrier';
 
 interface SearchResultsProps {
   results: Carrier[] | null;

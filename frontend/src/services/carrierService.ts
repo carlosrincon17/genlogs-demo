@@ -1,7 +1,7 @@
-export interface Carrier {
-    name: string;
-    trucks: string;
-}
+import { Routes } from '@/constants/apiRoutes';
+import { Carrier } from '@/interfaces/Carrier';
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export class CarrierService {
     async searchCarriers(fromCity: string, toCity: string): Promise<Carrier[]> {
@@ -10,7 +10,7 @@ export class CarrierService {
                 from_city: fromCity,
                 to_city: toCity,
             });
-            const response = await fetch(`http://localhost:8000/api/v1/carriers/search?${params.toString()}`);
+            const response = await fetch(`${API_URL}${Routes.Carriers}/search?${params.toString()}`);
 
             if (!response.ok) {
                 console.error('Failed to fetch carriers:', response.statusText);

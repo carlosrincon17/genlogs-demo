@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { SearchForm } from '@/components/SearchForm';
 import { SearchResults } from '@/components/SearchResults';
 import { MapDisplay } from '@/components/MapDisplay';
-import { carrierService, Carrier } from '@/services/carrierService';
+import { carrierService } from '@/services/carrierService';
+import { Carrier } from '@/interfaces/Carrier';
 import { useJsApiLoader, Libraries } from '@react-google-maps/api';
 
 const libraries: Libraries = ['places', 'geometry'];
@@ -20,7 +21,6 @@ function App() {
     });
 
     const handleSearch = async () => {
-        console.log('Searching...', { fromCity, toCity });
         const results = await carrierService.searchCarriers(fromCity, toCity);
         setSearchResults(results);
     };
