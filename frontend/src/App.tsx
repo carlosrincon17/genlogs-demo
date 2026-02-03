@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { SearchForm } from '@/components/SearchForm';
-import { SearchResults } from '@/components/SearchResults';
+// import { SearchResults } from '@/components/SearchResults'; // Deprecated
+import { CarrierList } from '@/components/CarrierList';
+import { CarrierDetail } from '@/components/CarrierDetail';
 import { MapDisplay } from '@/components/MapDisplay';
 import { carrierService } from '@/services/carrierService';
 import { Carrier } from '@/interfaces/Carrier';
@@ -14,6 +16,7 @@ function App() {
     const [mapQuery, setMapQuery] = useState<{ from: string; to: string }>({ from: '', to: '' });
 
     const [searchResults, setSearchResults] = useState<Carrier[] | null>(null);
+    const [selectedCarrier, setSelectedCarrier] = useState<Carrier | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const { isLoaded } = useJsApiLoader({
@@ -25,6 +28,7 @@ function App() {
     const handleSearch = async () => {
         setIsLoading(true);
         setSearchResults(null);
+        setSelectedCarrier(null);
         setMapQuery({ from: '', to: '' }); // Clean routes
 
         try {
@@ -62,8 +66,19 @@ function App() {
 
                 {(searchResults || isLoading) && (
                     <div className="absolute bottom-16 left-4 z-10 w-96 max-h-[calc(100vh-10rem)] pointer-events-none flex flex-col">
-                        <div className="pointer-events-auto flex-1 overflow-y-auto pr-2">
-                            <SearchResults results={searchResults} isLoading={isLoading} />
+                        <div className="pointer-events-auto flex-1 overflow-y-auto pr-2 h-full">
+                            {selectedCarrier ? (
+                                <CarrierDetail
+                                    carrier={selectedCarrier}
+                                    onBack={() => setSelectedCarrier(null)}
+                                />
+                            ) : (
+                                <CarrierList
+                                    results={searchResults}
+                                    isLoading={isLoading}
+                                    onSelectCarrier={setSelectedCarrier}
+                                />
+                            )}
                         </div>
                     </div>
                 )}

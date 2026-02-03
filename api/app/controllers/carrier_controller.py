@@ -1,4 +1,4 @@
-from app.constants.carrier_constants import CARRIER_DATA
+from app.managers.carrier_manager import CarrierManager
 
 
 class CarrierController:
@@ -6,10 +6,4 @@ class CarrierController:
     def search_carriers(from_city: str, to_city: str):
         from_city = from_city.lower()
         to_city = to_city.lower()
-
-        if "new york" in from_city and "washington" in to_city:
-            return CARRIER_DATA["us_east"]
-        elif "san francisco" in from_city and "los angeles" in to_city:
-            return CARRIER_DATA["west_coast"]
-        else:
-            return CARRIER_DATA["default"]
+        return CarrierManager.get_carriers(from_city, to_city)

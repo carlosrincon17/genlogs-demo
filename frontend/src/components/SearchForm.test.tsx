@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { SearchForm } from './SearchForm';
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock react-google-autocomplete
 vi.mock('react-google-autocomplete', () => {
     return {
         default: (props: any) => (

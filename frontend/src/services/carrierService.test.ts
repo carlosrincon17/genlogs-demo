@@ -9,11 +9,13 @@ describe('carrierService', () => {
 
     const mockCarriers = [
         {
-            id: 1,
-            company_name: 'Test Carrier',
+            name: 'Test Carrier',
+            trucks: '10 Trucks',
+            logo_url: 'http://test.com/logo',
             contact_name: 'John Doe',
             contact_email: 'john@test.com',
             contact_phone: '1234567890',
+            related_trucks: []
         },
     ];
 
