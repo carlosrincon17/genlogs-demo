@@ -4,7 +4,7 @@ from app.main import app
 
 client = TestClient(app)
 
-SEARCH_URL = "/api/v1/carriers/search"
+SEARCH_URL = "/api/v1/carriers/find"
 
 def test_read_root():
     response = client.get("/")
