@@ -1,7 +1,8 @@
 # 🚚 GenLogs
 
-**GenLogs** is a modern application designed to streamline logistics operations. 
-It helps you search/find carriers based on origin and destination cities, providing a seamless experience for logistics coordinators.
+![CI/CD Pipeline](https://github.com/carlosrincon17/genlogs-demo/actions/workflows/ci.yml/badge.svg)
+
+
 
 ---
 
