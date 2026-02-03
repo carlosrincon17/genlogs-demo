@@ -20,14 +20,12 @@ export function SearchForm({
   onSearch,
   isLoading,
 }: SearchFormProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onPlaceSelectedFrom = (place: any) => {
-    setFromCity(place.formatted_address);
+  const onPlaceSelectedFrom = (place: google.maps.places.PlaceResult) => {
+    setFromCity(place.formatted_address || '');
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onPlaceSelectedTo = (place: any) => {
-    setToCity(place.formatted_address);
+  const onPlaceSelectedTo = (place: google.maps.places.PlaceResult) => {
+    setToCity(place.formatted_address || '');
   };
 
   const isSearchDisabled = !fromCity || !toCity || isLoading;

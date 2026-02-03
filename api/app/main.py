@@ -5,7 +5,6 @@ from app.api.v1 import carriers
 
 app = FastAPI()
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

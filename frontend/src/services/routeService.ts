@@ -33,8 +33,9 @@ export class RouteService {
       const data = await response.json();
 
       if (data.routes) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return data.routes.map((route: any) => {
+        const routes = data.routes as { polyline?: { encodedPolyline?: string } }[];
+
+        return routes.map((route) => {
           if (route.polyline && route.polyline.encodedPolyline) {
             return google.maps.geometry.encoding.decodePath(
               route.polyline.encodedPolyline

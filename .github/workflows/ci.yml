@@ -14,9 +14,6 @@ permissions:
   contents: read
 
 jobs:
-  # =================================================================================================
-  # STAGE 1: LINT
-  # =================================================================================================
   lint-backend:
     name: Lint Backend
     runs-on: ubuntu-latest
@@ -37,9 +34,6 @@ jobs:
       - name: Run Frontend Linter (ESLint)
         run: docker run --rm frontend npm run lint
 
-  # =================================================================================================
-  # STAGE 2: TEST
-  # =================================================================================================
   test-backend:
     name: Test Backend
     needs: [lint-backend, lint-frontend]
@@ -60,12 +54,18 @@ jobs:
       - name: Build Frontend Docker Image
         run: docker build --target builder -t frontend -f infra/Dockerfile.frontend frontend/
       - name: Run Frontend Tests (Vitest)
-        run: docker run --rm frontend npm test
+        run: |
+          docker run --name frontend-test frontend npm test -- --coverage
+          docker cp frontend-test:/app/coverage ./coverage
+          docker rm frontend-test
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: coverage/
 
 
-  # =================================================================================================
-  # STAGE 3: BUILD
-  # =================================================================================================
   build-backend:
     name: Build Backend
     needs: test-backend
@@ -129,9 +129,6 @@ jobs:
           name: frontend-dist
           path: dist/
 
-  # =================================================================================================
-  # STAGE 4: DEPLOY
-  # =================================================================================================
   deploy-frontend:
     name: Deploy Frontend
     needs: build-frontend
