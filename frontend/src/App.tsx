@@ -19,9 +19,9 @@ function App() {
         libraries: libraries,
     });
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         console.log('Searching...', { fromCity, toCity });
-        const results = carrierService.searchCarriers(fromCity, toCity);
+        const results = await carrierService.searchCarriers(fromCity, toCity);
         setSearchResults(results);
     };
 
