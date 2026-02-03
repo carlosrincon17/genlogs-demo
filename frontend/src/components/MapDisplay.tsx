@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { GoogleMap, Polyline } from '@react-google-maps/api';
 import { routeService } from '@/services/routeService';
-import { MAP_CONSTANTS } from '@/constants/mapConstants';
+import { MAP_CONSTANTS, getPolylineOptions } from '@/constants/mapConstants';
 
 const containerStyle = {
   width: '100%',
@@ -45,16 +45,7 @@ export function MapDisplay({ from, to }: MapDisplayProps) {
         <Polyline
           key={`${index}-${index === selectedRouteIndex}`}
           path={path}
-          options={{
-            strokeColor:
-              index === selectedRouteIndex
-                ? MAP_CONSTANTS.ROUTE_COLORS.SELECTED
-                : MAP_CONSTANTS.ROUTE_COLORS.UNSELECTED,
-            strokeOpacity: 0.8,
-            strokeWeight: 5,
-            zIndex: index === selectedRouteIndex ? 10 : 1,
-            clickable: true,
-          }}
+          options={getPolylineOptions(index === selectedRouteIndex)}
           onClick={() => setSelectedRouteIndex(index)}
         />
       ))}

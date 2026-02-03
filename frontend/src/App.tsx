@@ -11,8 +11,10 @@ const libraries: Libraries = ['places', 'geometry'];
 function App() {
     const [fromCity, setFromCity] = useState<string>('');
     const [toCity, setToCity] = useState<string>('');
+    const [mapQuery, setMapQuery] = useState<{ from: string; to: string }>({ from: '', to: '' });
 
     const [searchResults, setSearchResults] = useState<Carrier[] | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -21,8 +23,19 @@ function App() {
     });
 
     const handleSearch = async () => {
-        const results = await carrierService.searchCarriers(fromCity, toCity);
-        setSearchResults(results);
+        setIsLoading(true);
+        setSearchResults(null);
+        setMapQuery({ from: '', to: '' }); // Clean routes
+
+        try {
+            const results = await carrierService.searchCarriers(fromCity, toCity);
+            setSearchResults(results);
+            setMapQuery({ from: fromCity, to: toCity }); // Render new route
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (!isLoaded) return <div>Loading...</div>;
@@ -31,7 +44,7 @@ function App() {
         <div className="flex flex-col h-screen bg-background font-sans antialiased overflow-hidden">
             <main className="flex-1 relative w-full h-full">
                 <div className="absolute inset-0 z-0">
-                    <MapDisplay from={fromCity} to={toCity} />
+                    <MapDisplay from={mapQuery.from} to={mapQuery.to} />
                 </div>
 
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-4xl px-4 pointer-events-none">
@@ -42,14 +55,15 @@ function App() {
                             toCity={toCity}
                             setToCity={setToCity}
                             onSearch={handleSearch}
+                            isLoading={isLoading}
                         />
                     </div>
                 </div>
 
-                {searchResults && (
+                {(searchResults || isLoading) && (
                     <div className="absolute bottom-16 left-4 z-10 w-96 max-h-[calc(100vh-10rem)] pointer-events-none flex flex-col">
                         <div className="pointer-events-auto flex-1 overflow-y-auto pr-2">
-                            <SearchResults results={searchResults} />
+                            <SearchResults results={searchResults} isLoading={isLoading} />
                         </div>
                     </div>
                 )}

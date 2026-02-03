@@ -3,16 +3,21 @@ import { Carrier } from '@/interfaces/Carrier';
 
 interface SearchResultsProps {
   results: Carrier[] | null;
+  isLoading?: boolean;
 }
 
-export function SearchResults({ results }: SearchResultsProps) {
+export function SearchResults({ results, isLoading }: SearchResultsProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Search Results</CardTitle>
       </CardHeader>
       <CardContent>
-        {results ? (
+        {isLoading ? (
+          <div className="flex justify-center p-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : results ? (
           <div className="grid gap-4">
             {results.map((carrier, index) => (
               <div

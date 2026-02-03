@@ -12,3 +12,13 @@ export const MAP_CONSTANTS = {
     UNSELECTED: '#7393B3',
   },
 };
+
+export const getPolylineOptions = (isSelected: boolean) => ({
+  strokeColor: isSelected
+    ? MAP_CONSTANTS.ROUTE_COLORS.SELECTED
+    : MAP_CONSTANTS.ROUTE_COLORS.UNSELECTED,
+  strokeOpacity: 0.8,
+  strokeWeight: 5,
+  zIndex: isSelected ? 10 : 1,
+  clickable: true,
+});

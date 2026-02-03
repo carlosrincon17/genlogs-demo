@@ -9,6 +9,7 @@ interface SearchFormProps {
   toCity: string;
   setToCity: (city: string) => void;
   onSearch: () => void;
+  isLoading?: boolean;
 }
 
 export function SearchForm({
@@ -17,6 +18,7 @@ export function SearchForm({
   toCity,
   setToCity,
   onSearch,
+  isLoading,
 }: SearchFormProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onPlaceSelectedFrom = (place: any) => {
@@ -27,6 +29,8 @@ export function SearchForm({
   const onPlaceSelectedTo = (place: any) => {
     setToCity(place.formatted_address);
   };
+
+  const isSearchDisabled = !fromCity || !toCity || isLoading;
 
   return (
     <Card>
@@ -63,7 +67,9 @@ export function SearchForm({
               onChange={(e) => setToCity((e.target as HTMLInputElement).value)}
             />
           </div>
-          <Button onClick={onSearch}>Search</Button>
+          <Button onClick={onSearch} disabled={isSearchDisabled}>
+            {isLoading ? 'Searching...' : 'Search'}
+          </Button>
         </div>
       </CardContent>
     </Card>
