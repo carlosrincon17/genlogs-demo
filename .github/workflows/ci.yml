@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,31 +6,95 @@ on:
       - master
 
 jobs:
-  linters:
+  # =================================================================================================
+  # STAGE 1: LINT
+  # =================================================================================================
+  lint-backend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
       - name: Build Backend Docker Image
         run: docker build -t backend -f infra/Dockerfile.backend api/
-      
       - name: Run Backend Linter (Ruff)
         run: docker run --rm backend uv run ruff check .
 
-      - name: Build Frontend Docker Image
-        run: docker build --target builder -t frontend -f infra/Dockerfile.frontend frontend/
-        
-      - name: Run Frontend Linter (ESLint)
-        run: docker run --rm frontend npm run lint
-
-  unit-tests:
-    needs: linters
+  lint-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+      - name: Build Frontend Docker Image
+        run: docker build --target builder -t frontend -f infra/Dockerfile.frontend frontend/
+      - name: Run Frontend Linter (ESLint)
+        run: docker run --rm frontend npm run lint
+
+  # =================================================================================================
+  # STAGE 2: TEST
+  # =================================================================================================
+  test-backend:
+    needs: [lint-backend, lint-frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Build Backend Docker Image
         run: docker build -t backend -f infra/Dockerfile.backend api/
-        
       - name: Run Backend Unit Tests (Pytest)
         run: docker run --rm backend uv run pytest
+
+  # =================================================================================================
+  # STAGE 3: BUILD
+  # =================================================================================================
+  build-backend:
+    needs: test-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Backend Image
+        run: |
+          docker build \
+            --build-arg ENVIRONMENT=production \
+            -t backend:latest \
+            -f infra/Dockerfile.backend api/
+      # In a real pipeline, you would push this image to ECR here.
+      - name: (Simulation) Push to ECR
+        run: echo "Pushing backend image to ECR..."
+
+  build-frontend:
+    needs: test-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Frontend Image
+        run: |
+          docker build \
+            --target builder \
+            --build-arg VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }} \
+            -t frontend:latest \
+            -f infra/Dockerfile.frontend frontend/
+      # In a real pipeline, you would push the artifacts here.
+      - name: (Simulation) Upload Build Artifacts
+        run: echo "Uploading frontend build artifacts..."
+
+  # =================================================================================================
+  # STAGE 4: DEPLOY
+  # =================================================================================================
+  deploy-frontend:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to CloudFormation
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: echo "Deploying frontend via CloudFormation..."
+
+  deploy-backend:
+    needs: build-backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to App Runner
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: echo "Deploying backend to AWS App Runner..."

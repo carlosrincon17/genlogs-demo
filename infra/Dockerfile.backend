@@ -9,6 +9,9 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project
 
+ARG ENVIRONMENT=production
+ENV ENVIRONMENT=$ENVIRONMENT
+
 # Copy application
 COPY . .
 
